@@ -12,6 +12,10 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
+// TODO(patrik):
+//   - Add featuring artists tag
+//   - Cover Art
+
 type Track struct {
 	Filename string   `toml:"filename"`
 	CoverArt string   `toml:"coverart"`
