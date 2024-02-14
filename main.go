@@ -13,15 +13,13 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
-// TODO(patrik):
-//   - Add featuring artists tag
-
 type Track struct {
-	Filename string   `toml:"filename"`
-	CoverArt string   `toml:"coverart"`
-	Name     string   `toml:"name"`
-	Date     string   `toml:"date"`
-	Tags     []string `toml:"tags"`
+	Filename  string   `toml:"filename"`
+	CoverArt  string   `toml:"coverart"`
+	Name      string   `toml:"name"`
+	Date      string   `toml:"date"`
+	Tags      []string `toml:"tags"`
+	Featuring []string `toml:"featuring"`
 }
 
 type Config struct {
@@ -30,28 +28,28 @@ type Config struct {
 }
 
 func copy(src, dst string) (int64, error) {
-        sourceFileStat, err := os.Stat(src)
-        if err != nil {
-                return 0, err
-        }
+	sourceFileStat, err := os.Stat(src)
+	if err != nil {
+		return 0, err
+	}
 
-        if !sourceFileStat.Mode().IsRegular() {
-                return 0, fmt.Errorf("%s is not a regular file", src)
-        }
+	if !sourceFileStat.Mode().IsRegular() {
+		return 0, fmt.Errorf("%s is not a regular file", src)
+	}
 
-        source, err := os.Open(src)
-        if err != nil {
-                return 0, err
-        }
-        defer source.Close()
+	source, err := os.Open(src)
+	if err != nil {
+		return 0, err
+	}
+	defer source.Close()
 
-        destination, err := os.Create(dst)
-        if err != nil {
-                return 0, err
-        }
-        defer destination.Close()
-        nBytes, err := io.Copy(destination, source)
-        return nBytes, err
+	destination, err := os.Create(dst)
+	if err != nil {
+		return 0, err
+	}
+	defer destination.Close()
+	nBytes, err := io.Copy(destination, source)
+	return nBytes, err
 }
 
 func main() {
@@ -91,12 +89,14 @@ func main() {
 
 		srcCoverArt := path.Join(srcDir, track.CoverArt)
 		ext := path.Ext(srcCoverArt)
-		_, err = copy(srcCoverArt, path.Join(dir, "cover" + ext))
+		_, err = copy(srcCoverArt, path.Join(dir, "cover"+ext))
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		args := []string{}
+
+		fmt.Printf("track.Featuring: %v\n", track.Featuring)
 
 		args = append(args, "-i", path.Join(srcDir, track.Filename))
 
@@ -104,12 +104,20 @@ func main() {
 		args = append(args, "-metadata", fmt.Sprintf(`artist=%s`, config.Artist))
 		args = append(args, "-metadata", fmt.Sprintf(`album_artist=%s`, config.Artist))
 		args = append(args, "-metadata", fmt.Sprintf(`album=%s`, albumName))
-		args = append(args, "-metadata", fmt.Sprintf(`tags=%s`, strings.Join(track.Tags, ",")))
+
+		if len(track.Tags) > 0 {
+			args = append(args, "-metadata", fmt.Sprintf(`tags=%s`, strings.Join(track.Tags, ",")))
+		}
+
 		if track.Date != "" {
 			args = append(args, "-metadata", fmt.Sprintf(`date=%s`, track.Date))
 		}
 
-		args = append(args, path.Join(dir, track.Name+".flac"))
+		if len(track.Featuring) > 0 {
+			args = append(args, "-metadata", fmt.Sprintf(`featuring=%s`, strings.Join(track.Featuring, ",")))
+		}
+
+		args = append(args, path.Join(dir, "01 - "+strings.TrimSpace(track.Name)+".flac"))
 
 		cmd := exec.Command("ffmpeg", args...)
 		cmd.Stdout = os.Stdout
