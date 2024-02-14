@@ -26,8 +26,13 @@ type Config struct {
 }
 
 func main() {
-	dstDir := "./result"
-	srcDir := "/Volumes/media/musicraw/Divide Music"
+	if len(os.Args) != 3 {
+		fmt.Printf("Usage: %s <SOURCE_DIR> <DEST_DIR>\n", os.Args[0])
+		os.Exit(-1)
+	}
+
+	srcDir := os.Args[1]
+	dstDir := os.Args[2]
 
 	data, err := os.ReadFile(path.Join(srcDir, "tracks.toml"))
 	if err != nil {
@@ -70,7 +75,7 @@ func main() {
 		args = append(args, "-metadata", fmt.Sprintf(`title=%s`, track.Name))
 		args = append(args, "-metadata", fmt.Sprintf(`artist=%s`, config.Artist))
 		args = append(args, "-metadata", fmt.Sprintf(`album_artist=%s`, config.Artist))
-		args = append(args, "-metadata", fmt.Sprintf(`album=%s`, track.Name+" (Single)"))
+		args = append(args, "-metadata", fmt.Sprintf(`album=%s`, albumName))
 		args = append(args, "-metadata", fmt.Sprintf(`tags=%s`, strings.Join(track.Tags, ",")))
 		if track.Date != "" {
 			args = append(args, "-metadata", fmt.Sprintf(`date=%s`, track.Date))
