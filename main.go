@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -10,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/kr/pretty"
+	"github.com/nanoteck137/slurpuff/utils"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -25,31 +25,6 @@ type Track struct {
 type Config struct {
 	Artist string  `toml:"artist"`
 	Tracks []Track `toml:"tracks"`
-}
-
-func copy(src, dst string) (int64, error) {
-	sourceFileStat, err := os.Stat(src)
-	if err != nil {
-		return 0, err
-	}
-
-	if !sourceFileStat.Mode().IsRegular() {
-		return 0, fmt.Errorf("%s is not a regular file", src)
-	}
-
-	source, err := os.Open(src)
-	if err != nil {
-		return 0, err
-	}
-	defer source.Close()
-
-	destination, err := os.Create(dst)
-	if err != nil {
-		return 0, err
-	}
-	defer destination.Close()
-	nBytes, err := io.Copy(destination, source)
-	return nBytes, err
 }
 
 func main() {
@@ -89,7 +64,7 @@ func main() {
 
 		srcCoverArt := path.Join(srcDir, track.CoverArt)
 		ext := path.Ext(srcCoverArt)
-		_, err = copy(srcCoverArt, path.Join(dir, "cover"+ext))
+		_, err = utils.Copy(srcCoverArt, path.Join(dir, "cover"+ext))
 		if err != nil {
 			log.Fatal(err)
 		}
