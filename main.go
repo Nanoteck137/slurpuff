@@ -96,8 +96,6 @@ func main() {
 
 		args := []string{}
 
-		fmt.Printf("track.Featuring: %v\n", track.Featuring)
-
 		args = append(args, "-i", path.Join(srcDir, track.Filename))
 
 		args = append(args, "-metadata", fmt.Sprintf(`title=%s`, track.Name))
