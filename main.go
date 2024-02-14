@@ -52,8 +52,6 @@ func main() {
 	// TODO(patrik): Check albumName for forward slashes and other illegal
 	// filesystem characters
 	for _, track := range config.Tracks {
-		fmt.Printf("track.Name: %v\n", track.Name)
-
 		albumName := track.Name + " (Single)"
 
 		dir := path.Join(dstDir, albumName)
