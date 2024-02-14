@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -14,7 +15,6 @@ import (
 
 // TODO(patrik):
 //   - Add featuring artists tag
-//   - Cover Art
 
 type Track struct {
 	Filename string   `toml:"filename"`
@@ -27,6 +27,31 @@ type Track struct {
 type Config struct {
 	Artist string  `toml:"artist"`
 	Tracks []Track `toml:"tracks"`
+}
+
+func copy(src, dst string) (int64, error) {
+        sourceFileStat, err := os.Stat(src)
+        if err != nil {
+                return 0, err
+        }
+
+        if !sourceFileStat.Mode().IsRegular() {
+                return 0, fmt.Errorf("%s is not a regular file", src)
+        }
+
+        source, err := os.Open(src)
+        if err != nil {
+                return 0, err
+        }
+        defer source.Close()
+
+        destination, err := os.Create(dst)
+        if err != nil {
+                return 0, err
+        }
+        defer destination.Close()
+        nBytes, err := io.Copy(destination, source)
+        return nBytes, err
 }
 
 func main() {
@@ -64,13 +89,12 @@ func main() {
 			log.Fatal(err)
 		}
 
-		src := path.Join(srcDir, track.CoverArt)
-		srcFile, err := os.Open(src)
+		srcCoverArt := path.Join(srcDir, track.CoverArt)
+		ext := path.Ext(srcCoverArt)
+		_, err = copy(srcCoverArt, path.Join(dir, "cover" + ext))
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		_ = srcFile
 
 		args := []string{}
 
