@@ -49,6 +49,15 @@ func Execute(src string, dst string) error {
 		return err
 	}
 
+	err = ExecuteConfig(config, src, dst)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ExecuteConfig(config AlbumConfig, src, dst string) error {
 	artistName := strings.TrimSpace(config.Artist)
 
 	safeArtistName, err := utils.SafeName(artistName)
