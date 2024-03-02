@@ -17,6 +17,7 @@ type Track struct {
 	Num       int      `toml:"num"`
 	Name      string   `toml:"name"`
 	Date      string   `toml:"date"`
+	Artist    string   `toml:"artist"`
 	Tags      []string `toml:"tags"`
 	Featuring []string `toml:"featuring"`
 }
@@ -128,8 +129,13 @@ func ExecuteConfig(config AlbumConfig, src, dst string) error {
 
 		args = append(args, "-i", trackPath, "-vn", "-map_metadata", "-1")
 
+		artist := config.Artist
+		if track.Artist != "" {
+			artist = track.Artist
+		}
+
 		args = append(args, "-metadata", fmt.Sprintf("title=%s", track.Name))
-		args = append(args, "-metadata", fmt.Sprintf("artist=%s", config.Artist))
+		args = append(args, "-metadata", fmt.Sprintf("artist=%s", artist))
 		args = append(args, "-metadata", fmt.Sprintf("album_artist=%s", config.Artist))
 		args = append(args, "-metadata", fmt.Sprintf("album=%s", albumName))
 
