@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/flytam/filenamify"
 )
 
 func Copy(src, dst string) (int64, error) {
@@ -249,4 +251,12 @@ func IsValidTrackExt(ext string) bool {
 	}
 
 	return false
+}
+
+func SafeName(name string) (string, error) {
+	replacementSpace := func(options *filenamify.Options) { 
+		options.Replacement = "" 
+	}
+
+	return filenamify.FilenamifyV2(name, replacementSpace)
 }

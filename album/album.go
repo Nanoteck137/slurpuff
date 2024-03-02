@@ -3,6 +3,7 @@ package album
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 
@@ -28,7 +29,7 @@ type AlbumConfig struct {
 }
 
 func Execute(src string, dst string) error {
-	// srcDir, _ := cmd.Flags().GetString("src")
+	// TODO(patrik): Add force flag
 
 	err := os.MkdirAll(dst, 0755)
 	if err != nil {
@@ -50,9 +51,11 @@ func Execute(src string, dst string) error {
 
 	artistName := strings.TrimSpace(config.Artist)
 
-	replacer := strings.NewReplacer(":", "", "/", "")
+	safeArtistName, err := utils.SafeName(artistName)
+	if err != nil {
+		return err
+	}
 
-	safeArtistName := replacer.Replace(artistName)
 	dstDir := path.Join(dst, safeArtistName)
 	err = os.MkdirAll(dstDir, 0755)
 	if err != nil {
@@ -70,7 +73,11 @@ func Execute(src string, dst string) error {
 
 	albumName := config.Album
 
-	safeAlbumName := replacer.Replace(albumName)
+	safeAlbumName, err := utils.SafeName(albumName)
+	if err != nil {
+		return err
+	}
+
 	dir := path.Join(dstDir, safeAlbumName)
 	err = os.MkdirAll(dir, 0755)
 	if err != nil {
@@ -78,6 +85,7 @@ func Execute(src string, dst string) error {
 	}
 
 	if albumName != safeAlbumName {
+		// TODO(patrik): Dont override
 		err := os.WriteFile(path.Join(dir, "override.txt"), []byte(albumName), 0644)
 		if err != nil {
 			return err
@@ -133,16 +141,20 @@ func Execute(src string, dst string) error {
 		}
 
 		outputName := fmt.Sprintf("%02v - %s%s", track.Num, strings.TrimSpace(track.Name), outputExt)
-		args = append(args, path.Join(dir, outputName))
+		safeOutputName, err := utils.SafeName(outputName)
+		if err != nil {
+			return err
+		}
+		args = append(args, path.Join(dir, safeOutputName))
 
-		/* cmd := exec.Command("ffmpeg", args...)
+		cmd := exec.Command("ffmpeg", args...)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
 		err = cmd.Run()
 		if err != nil {
 			return err
-		} */
+		}
 	}
 
 	return nil

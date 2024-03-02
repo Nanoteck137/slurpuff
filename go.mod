@@ -3,6 +3,7 @@ module github.com/nanoteck137/slurpuff
 go 1.21.6
 
 require (
+	github.com/flytam/filenamify v1.2.0
 	github.com/kr/pretty v0.3.1
 	github.com/pelletier/go-toml/v2 v2.1.1
 	github.com/spf13/cobra v1.8.0
