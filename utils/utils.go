@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -237,14 +239,16 @@ func CheckFile(filepath string) (FileResult, error) {
 	}
 }
 
-var validExts []string = []string{
-	"wav",
-	"flac",
-	"mp3",
-}
+func IsValidExt(exts []string, ext string) bool {
+	if len(ext) == 0 {
+		return false
+	}
 
-func IsValidTrackExt(ext string) bool {
-	for _, valid := range validExts {
+	if ext[0] == '.' {
+		ext = ext[1:]
+	}
+
+	for _, valid := range exts {
 		if valid == ext {
 			return true
 		}
@@ -253,10 +257,45 @@ func IsValidTrackExt(ext string) bool {
 	return false
 }
 
+var validTrackExts []string = []string{
+	"wav",
+	"flac",
+	"mp3",
+}
+
+func IsValidTrackExt(ext string) bool {
+	return IsValidExt(validTrackExts, ext)
+}
+
+var validCoverExts []string = []string{
+	"png",
+	"jpg",
+	"jpeg",
+}
+
+func IsValidCoverExt(ext string) bool {
+	return IsValidExt(validCoverExts, ext)
+}
+
 func SafeName(name string) (string, error) {
 	replacementSpace := func(options *filenamify.Options) { 
 		options.Replacement = "" 
 	}
 
 	return filenamify.FilenamifyV2(name, replacementSpace)
+}
+
+func FindFirstValidImage(dir string) string {
+	found := ""
+
+	filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
+		if IsValidCoverExt(filepath.Ext(p)) {
+			found = d.Name()
+			return filepath.SkipAll
+		}
+
+		return nil
+	})
+
+	return found
 }

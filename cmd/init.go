@@ -9,6 +9,7 @@ import (
 	"github.com/kr/pretty"
 	dwebbleutils "github.com/nanoteck137/dwebble/utils"
 	"github.com/nanoteck137/slurpuff/album"
+	"github.com/nanoteck137/slurpuff/utils"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/cobra"
 )
@@ -33,6 +34,7 @@ var initAlbumCmd = &cobra.Command{
 		albumName := ""
 
 		tracks := []album.Track{}
+
 
 		for _, entry := range entries {
 			if entry.Name()[0] == '.' {
@@ -99,10 +101,12 @@ var initAlbumCmd = &cobra.Command{
 			}
 		}
 
+		albumCover := utils.FindFirstValidImage(src)
+
 		config := album.AlbumConfig{
 			Album:    albumName,
 			Artist:   albumArtist,
-			CoverArt: "",
+			CoverArt: albumCover,
 			Tracks:   tracks,
 		}
 
