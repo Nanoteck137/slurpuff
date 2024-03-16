@@ -19,13 +19,13 @@ type Track struct {
 	Date      string   `toml:"date"`
 	Artist    string   `toml:"artist"`
 	Tags      []string `toml:"tags"`
-	Featuring []string `toml:"featuring"`
+	Featuring []string `toml:"featuring,omitempty"`
 }
 
 type AlbumConfig struct {
 	Album    string  `toml:"album"`
 	Artist   string  `toml:"artist"`
-	CoverArt string  `toml:"coverArt"`
+	CoverArt string  `toml:"coverart"`
 	Tracks   []Track `toml:"tracks"`
 }
 
@@ -119,7 +119,7 @@ func ExecuteConfig(config AlbumConfig, src, dst string) error {
 		trackPath := path.Join(src, track.Filename)
 
 		inputExt := path.Ext(trackPath)
-		outputExt := inputExt
+		outputExt := ".opus"
 
 		if inputExt == ".wav" {
 			outputExt = ".flac"
@@ -138,6 +138,7 @@ func ExecuteConfig(config AlbumConfig, src, dst string) error {
 		args = append(args, "-metadata", fmt.Sprintf("artist=%s", artist))
 		args = append(args, "-metadata", fmt.Sprintf("album_artist=%s", config.Artist))
 		args = append(args, "-metadata", fmt.Sprintf("album=%s", albumName))
+		args = append(args, "-metadata", fmt.Sprintf("track=%d", track.Num))
 
 		if len(track.Tags) > 0 {
 			args = append(args, "-metadata", fmt.Sprintf("tags=%s", strings.Join(track.Tags, ",")))
@@ -149,6 +150,10 @@ func ExecuteConfig(config AlbumConfig, src, dst string) error {
 
 		if len(track.Featuring) > 0 {
 			args = append(args, "-metadata", fmt.Sprintf("featuring=%s", strings.Join(track.Featuring, ",")))
+		}
+
+		if !copyMode && outputExt == ".opus" {
+			args = append(args, "-vbr", "on", "-b:a", "128k")
 		}
 
 		if copyMode {
