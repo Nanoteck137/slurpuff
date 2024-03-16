@@ -16,10 +16,10 @@ type Track struct {
 	Filename  string   `toml:"filename"`
 	Num       int      `toml:"num"`
 	Name      string   `toml:"name"`
-	Date      string   `toml:"date"`
 	Artist    string   `toml:"artist"`
+	Date      string   `toml:"date"`
 	Tags      []string `toml:"tags"`
-	Featuring []string `toml:"featuring,omitempty"`
+	Featuring []string `toml:"featuring"`
 }
 
 type AlbumConfig struct {
