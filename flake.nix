@@ -16,9 +16,13 @@
 
         program = pkgs.buildGoModule {
           pname = "slurpuff";
-          version = "0.0.1"; 
+          version = self.shortRev or "dirty";
           src = ./.;
-          vendorHash = "sha256-LQrXsuv+t1KhQarh3HFGNmoq7mPiaXskbtC2T7g6T4Q=";
+          vendorHash = "sha256-y5McAeXQWLO2VkS5AG1nUY0LpiwLCztKjiqOm0vgWm0=";
+
+          buildInputs = [
+            pkgs.ffmpeg
+          ];
         };
       in
       {
