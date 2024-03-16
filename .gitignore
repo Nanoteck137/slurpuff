@@ -21,4 +21,5 @@
 go.work
 
 result/
+work/
 .DS_Store
