@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 
-	"github.com/kr/pretty"
 	dwebbleutils "github.com/nanoteck137/dwebble/utils"
 	"github.com/nanoteck137/slurpuff/album"
 	"github.com/nanoteck137/slurpuff/utils"
@@ -50,37 +50,40 @@ var initAlbumCmd = &cobra.Command{
 
 			// TODO(patrik): Change this IsValidTrackExt
 			if utils.IsValidTrackExt(ext[1:]) {
-				res, err := dwebbleutils.CheckFile(p)
+				info, err := dwebbleutils.GetInfo(p)
 				if err != nil {
 					log.Fatal(err)
 				}
 
-				pretty.Println(res)
-
 				if albumName == "" {
-					if name, exists := res.Tags["album"]; exists {
+					if name, exists := info.Tags["album"]; exists {
 						albumName = name
 					}
 				}
 
 				if albumArtist == "" {
-					if name, exists := res.Tags["album_artist"]; exists {
+					if name, exists := info.Tags["album_artist"]; exists {
 						albumArtist = name
 					}
 				}
 
 				artist := ""
-				if value, exists := res.Tags["artist"]; exists {
+				if value, exists := info.Tags["artist"]; exists {
 					artist = value
 				}
 
-				name := res.Name
-				if value, exists := res.Tags["title"]; exists {
+				var track int64
+				if value, exists := info.Tags["track"]; exists {
+					track, _ = strconv.ParseInt(value, 10, 64)
+				}
+
+				name := entry.Name()
+				if value, exists := info.Tags["title"]; exists {
 					name = value
 				}
 
 				date := ""
-				if value, exists := res.Tags["date"]; exists {
+				if value, exists := info.Tags["date"]; exists {
 					date = value
 				}
 
@@ -91,7 +94,7 @@ var initAlbumCmd = &cobra.Command{
 
 				tracks = append(tracks, album.Track{
 					Filename:  entry.Name(),
-					Num:       res.Number,
+					Num:       int(track),
 					Name:      name,
 					Date:      date,
 					Artist:    artists[0],
