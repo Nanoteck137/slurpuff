@@ -79,8 +79,6 @@ var initAlbumCmd = &cobra.Command{
 					}
 				}
 
-				pretty.Println(info.Tags)
-
 				name := info.Name
 				if value, exists := info.Tags["title"]; exists {
 					name = value

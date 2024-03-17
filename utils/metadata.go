@@ -154,15 +154,11 @@ func GetInfo(filepath string) (Info, error) {
 		return Info{}, err
 	}
 
-	fmt.Printf("string(data): %v\n", string(data))
-
 	var probe probe
 	err = json.Unmarshal(data, &probe)
 	if err != nil {
 		return Info{}, err
 	}
-
-	pretty.Println(probe)
 
 	var tags map[string]string
 
