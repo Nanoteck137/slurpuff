@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kr/pretty"
 	"github.com/nanoteck137/slurpuff/album"
 	"github.com/nanoteck137/slurpuff/utils"
 	"github.com/pelletier/go-toml/v2"

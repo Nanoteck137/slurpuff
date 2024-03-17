@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/kr/pretty"
 )
 
 func RunFFprobe(args ...string) ([]byte, error) {
