@@ -35,7 +35,6 @@ var initAlbumCmd = &cobra.Command{
 
 		tracks := []album.Track{}
 
-
 		for _, entry := range entries {
 			if entry.Name()[0] == '.' {
 				continue
@@ -50,7 +49,7 @@ var initAlbumCmd = &cobra.Command{
 
 			// TODO(patrik): Change this IsValidTrackExt
 			if utils.IsValidTrackExt(ext[1:]) {
-				info, err := dwebbleutils.GetInfo(p)
+				info, err := dwebbleutils.CheckFile(p)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -72,9 +71,12 @@ var initAlbumCmd = &cobra.Command{
 					artist = value
 				}
 
-				var track int64
+				track := info.Number
 				if value, exists := info.Tags["track"]; exists {
-					track, _ = strconv.ParseInt(value, 10, 64)
+					if track == 0 {
+						t, _ := strconv.ParseInt(value, 10, 64)
+						track = int(t)
+					}
 				}
 
 				name := entry.Name()
