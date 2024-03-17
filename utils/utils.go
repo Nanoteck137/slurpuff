@@ -259,8 +259,11 @@ func IsValidExt(exts []string, ext string) bool {
 
 var validTrackExts []string = []string{
 	"wav",
+	"m4a",
 	"flac",
 	"mp3",
+	"opus",
+	"ogg",
 }
 
 func IsValidTrackExt(ext string) bool {
