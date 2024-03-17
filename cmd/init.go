@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/kr/pretty"
-	dwebbleutils "github.com/nanoteck137/dwebble/utils"
 	"github.com/nanoteck137/slurpuff/album"
 	"github.com/nanoteck137/slurpuff/utils"
 	"github.com/pelletier/go-toml/v2"
@@ -50,7 +49,7 @@ var initAlbumCmd = &cobra.Command{
 
 			// TODO(patrik): Change this IsValidTrackExt
 			if utils.IsValidTrackExt(ext[1:]) {
-				info, err := dwebbleutils.CheckFile(p)
+				info, err := utils.CheckFile(p)
 				if err != nil {
 					log.Fatal(err)
 				}
