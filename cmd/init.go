@@ -79,9 +79,13 @@ var initAlbumCmd = &cobra.Command{
 					}
 				}
 
-				name := entry.Name()
+				name := info.Name
 				if value, exists := info.Tags["title"]; exists {
 					name = value
+				} else {
+					if name == "" {
+						name = entry.Name()
+					}
 				}
 
 				date := ""
