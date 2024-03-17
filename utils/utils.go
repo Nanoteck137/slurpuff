@@ -88,7 +88,7 @@ func FindFirstValidImage(dir string) string {
 	found := ""
 
 	filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
-		if IsValidCoverExt(filepath.Ext(p)) {
+		if d.Name()[0] != '.' && IsValidCoverExt(filepath.Ext(p)) {
 			found = d.Name()
 			return filepath.SkipAll
 		}
