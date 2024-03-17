@@ -22,7 +22,7 @@ type SingleConfig struct {
 	Singles []Single `toml:"singles"`
 }
 
-func Execute(src string, dst string) error {
+func Execute(mode, src, dst string) error {
 	// srcDir, _ := cmd.Flags().GetString("src")
 
 	err := os.MkdirAll(dst, 0755)
@@ -62,7 +62,7 @@ func Execute(src string, dst string) error {
 			},
 		}
 
-		err := album.ExecuteConfig(albumConfig, src, dst)
+		err := album.ExecuteConfig(albumConfig, mode, src, dst)
 		if err != nil {
 			return err
 		}

@@ -2,6 +2,7 @@ package album
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -29,7 +30,7 @@ type AlbumConfig struct {
 	Tracks   []Track `toml:"tracks"`
 }
 
-func Execute(src string, dst string) error {
+func Execute(mode, src, dst string) error {
 	// TODO(patrik): Add force flag
 
 	err := os.MkdirAll(dst, 0755)
@@ -50,7 +51,7 @@ func Execute(src string, dst string) error {
 		return err
 	}
 
-	err = ExecuteConfig(config, src, dst)
+	err = ExecuteConfig(config, mode, src, dst)
 	if err != nil {
 		return err
 	}
@@ -58,7 +59,14 @@ func Execute(src string, dst string) error {
 	return nil
 }
 
-func ExecuteConfig(config AlbumConfig, src, dst string) error {
+const (
+	ModeDwebble = "dwebble"
+	ModeOpus = "opus"
+	ModeMp3 = "mp3"
+	ModeMap = "map"
+)
+
+func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
 	artistName := strings.TrimSpace(config.Artist)
 
 	safeArtistName, err := utils.SafeName(artistName)
@@ -119,19 +127,33 @@ func ExecuteConfig(config AlbumConfig, src, dst string) error {
 		trackPath := path.Join(src, track.Filename)
 
 		inputExt := path.Ext(trackPath)
-		outputExt := ".opus"
+		outputExt := ""
 
-		if inputExt == ".wav" {
-			outputExt = ".flac"
+		switch mode {
+		case ModeDwebble:
+			outputExt = inputExt
+			if inputExt == ".wav" {
+				outputExt = ".flac"
+			}
+		case ModeMp3:
+			// TODO(patrik): Add params
+			outputExt = ".mp3"
+		case ModeOpus:
+			// TODO(patrik): Add params
+			outputExt = ".opus"
+		case ModeMap:
+			outputExt = inputExt
+		default:
+			log.Fatal("Unknown mode:", mode)
 		}
 
 		copyMode := inputExt == outputExt
 
 		args = append(args, "-i", trackPath, "-vn", "-map_metadata", "-1")
 
-		artist := config.Artist
-		if track.Artist != "" {
-			artist = track.Artist
+		artist := track.Artist
+		if artist == "" {
+			artist = config.Artist
 		}
 
 		args = append(args, "-metadata", fmt.Sprintf("title=%s", track.Name))
