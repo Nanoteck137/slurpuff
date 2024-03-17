@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/kr/pretty"
 	dwebbleutils "github.com/nanoteck137/dwebble/utils"
 	"github.com/nanoteck137/slurpuff/album"
 	"github.com/nanoteck137/slurpuff/utils"
@@ -78,6 +79,8 @@ var initAlbumCmd = &cobra.Command{
 						track = int(t)
 					}
 				}
+
+				pretty.Println(info.Tags)
 
 				name := info.Name
 				if value, exists := info.Tags["title"]; exists {
