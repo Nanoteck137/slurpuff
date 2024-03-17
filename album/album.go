@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+	"sync"
 
 	"github.com/kr/pretty"
 	"github.com/nanoteck137/slurpuff/utils"
@@ -61,9 +62,9 @@ func Execute(mode, src, dst string) error {
 
 const (
 	ModeDwebble = "dwebble"
-	ModeOpus = "opus"
-	ModeMp3 = "mp3"
-	ModeMap = "map"
+	ModeOpus    = "opus"
+	ModeMp3     = "mp3"
+	ModeMap     = "map"
 )
 
 func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
@@ -118,6 +119,10 @@ func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
 			return err
 		}
 	}
+
+	wg := sync.WaitGroup{}
+
+	plock := sync.Mutex{}
 
 	// TODO(patrik): Check albumName for forward slashes and other illegal
 	// filesystem characters
@@ -189,15 +194,31 @@ func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
 		}
 		args = append(args, path.Join(dir, safeOutputName))
 
-		cmd := exec.Command("ffmpeg", args...)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		wg.Add(1)
 
-		err = cmd.Run()
-		if err != nil {
-			return err
-		}
+		go func() {
+			plock.Lock()
+			fmt.Println("Processing:", trackPath)
+			plock.Unlock()
+
+			cmd := exec.Command("ffmpeg", args...)
+			// cmd.Stdout = os.Stdout
+			// cmd.Stderr = os.Stderr
+
+			err = cmd.Run()
+			if err != nil {
+				log.Fatal(err)
+			}
+			
+			plock.Lock()
+			fmt.Println("Done Processing:", trackPath)
+			plock.Unlock()
+
+			wg.Done()
+		}()
 	}
+
+	wg.Wait()
 
 	return nil
 }
