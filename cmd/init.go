@@ -49,7 +49,7 @@ var initAlbumCmd = &cobra.Command{
 			}
 
 			// TODO(patrik): Change this IsValidTrackExt
-			if dwebbleutils.IsValidTrackExt(ext[1:]) {
+			if utils.IsValidTrackExt(ext[1:]) {
 				res, err := dwebbleutils.CheckFile(p)
 				if err != nil {
 					log.Fatal(err)
