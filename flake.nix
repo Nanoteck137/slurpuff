@@ -18,7 +18,7 @@
           pname = "slurpuff";
           version = self.shortRev or "dirty";
           src = ./.;
-          vendorHash = "sha256-y5McAeXQWLO2VkS5AG1nUY0LpiwLCztKjiqOm0vgWm0=";
+          vendorHash = "sha256-8dLbnY+bPfzI9dnJtC1vAjR4T0LJJRMTXFNnMR4gmuc=";
 
           buildInputs = [
             pkgs.ffmpeg
