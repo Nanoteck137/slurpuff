@@ -87,7 +87,7 @@ type probeStream struct {
 		// "still_image": 0
 	} `json:"disposition"`
 
-	Tags     map[string]string `json:"tags"`
+	Tags map[string]string `json:"tags"`
 
 	// "codec_long_name": "PNG (Portable Network Graphics) image",
 	// "codec_tag_string": "[0][0][0][0]",
@@ -141,7 +141,7 @@ var test1 = regexp.MustCompile(`(^\d+)[-\s]*(.+)\.`)
 var test2 = regexp.MustCompile(`track(\d+).+`)
 
 type Info struct {
-	Tags map[string]string
+	Tags     map[string]string
 	Duration int
 }
 
@@ -158,7 +158,12 @@ func GetInfo(filepath string) (Info, error) {
 		return Info{}, err
 	}
 
+	ext := path.Ext(filepath)
+
 	var tags map[string]string
+	if ext != ".opus" {
+		tags = convertMapKeysToLowercase(probe.Format.Tags)
+	}
 
 	duration := 0
 	for _, s := range probe.Streams {
@@ -169,7 +174,9 @@ func GetInfo(filepath string) (Info, error) {
 			}
 
 			duration = int(dur)
-			tags = convertMapKeysToLowercase(s.Tags)
+			if ext == ".opus" {
+				tags = convertMapKeysToLowercase(s.Tags)
+			}
 		}
 	}
 
