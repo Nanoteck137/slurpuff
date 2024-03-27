@@ -20,9 +20,11 @@
           src = ./.;
           vendorHash = "sha256-yC5g9Y4tCtHFPfeHTtip/xSoiR9yAWf0Ys/rAZ1C2+I=";
 
-          buildInputs = [
-            pkgs.ffmpeg
-          ];
+          nativeBuildInputs = [ pkgs.makeWrapper ];
+
+          postFixup = ''
+          wrapProgram $out/bin/slurpuff --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.ffmpeg ]}
+          '';
         };
       in
       {
