@@ -18,7 +18,7 @@
           pname = "slurpuff";
           version = self.shortRev or "dirty";
           src = ./.;
-          vendorHash = "sha256-yC5g9Y4tCtHFPfeHTtip/xSoiR9yAWf0Ys/rAZ1C2+I=";
+          vendorHash = "sha256-R9eot+MwJtsY0arPlvzVyelajmgHi9KLAPSqsvVS/2Y=";
 
           nativeBuildInputs = [ pkgs.makeWrapper ];
 

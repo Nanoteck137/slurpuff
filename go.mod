@@ -1,11 +1,11 @@
 module github.com/nanoteck137/slurpuff
 
-go 1.21.7
+go 1.21.6
 
 require (
 	github.com/flytam/filenamify v1.2.0
 	github.com/kr/pretty v0.3.1
-	github.com/nanoteck137/parasect v0.1.2
+	github.com/nanoteck137/parasect v0.2.1
 	github.com/pelletier/go-toml/v2 v2.2.0
 	github.com/spf13/cobra v1.8.0
 )
