@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/flytam/filenamify"
+	"github.com/nanoteck137/parasect"
 )
 
 func Copy(src, dst string) (int64, error) {
@@ -35,24 +36,6 @@ func Copy(src, dst string) (int64, error) {
 	return nBytes, err
 }
 
-func IsValidExt(exts []string, ext string) bool {
-	if len(ext) == 0 {
-		return false
-	}
-
-	if ext[0] == '.' {
-		ext = ext[1:]
-	}
-
-	for _, valid := range exts {
-		if valid == ext {
-			return true
-		}
-	}
-
-	return false
-}
-
 var validTrackExts []string = []string{
 	"wav",
 	"m4a",
@@ -63,7 +46,7 @@ var validTrackExts []string = []string{
 }
 
 func IsValidTrackExt(ext string) bool {
-	return IsValidExt(validTrackExts, ext)
+	return parasect.IsValidExt(validTrackExts, ext)
 }
 
 var validCoverExts []string = []string{
@@ -73,7 +56,7 @@ var validCoverExts []string = []string{
 }
 
 func IsValidCoverExt(ext string) bool {
-	return IsValidExt(validCoverExts, ext)
+	return parasect.IsValidExt(validCoverExts, ext)
 }
 
 func SafeName(name string) (string, error) {
