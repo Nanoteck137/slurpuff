@@ -181,7 +181,7 @@ func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
 		}
 
 		if len(track.Genres) > 0 {
-			args = append(args, "-metadata", fmt.Sprintf("genres=%s", strings.Join(track.Genres, ",")))
+			args = append(args, "-metadata", fmt.Sprintf("genre=%s", strings.Join(track.Genres, ",")))
 		}
 
 		if !copyMode && outputExt == ".opus" {
