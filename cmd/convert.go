@@ -6,6 +6,7 @@ import (
 	"log"
 	"path"
 	"path/filepath"
+	"sync"
 
 	"github.com/nanoteck137/slurpuff/album"
 	"github.com/nanoteck137/slurpuff/single"
@@ -13,7 +14,7 @@ import (
 )
 
 var convertCmd = &cobra.Command{
-	Use:  "convert",
+	Use: "convert",
 }
 
 var singleCmd = &cobra.Command{
@@ -47,7 +48,7 @@ var albumCmd = &cobra.Command{
 }
 
 var allCmd = &cobra.Command{
-	Use: "all",
+	Use:  "all",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		dst := args[0]
@@ -75,14 +76,17 @@ var allCmd = &cobra.Command{
 		fmt.Printf("albums: %v\n", albums)
 		fmt.Printf("singles: %v\n", singles)
 
+		wg := sync.WaitGroup{}
 		for _, p := range albums {
-			go func(){
-			src := path.Dir(p)
-			err := album.Execute(mode, src, dst)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}()
+			wg.Add(1)
+			go func() {
+				src := path.Dir(p)
+				err := album.Execute(mode, src, dst)
+				if err != nil {
+					log.Fatal(err)
+				}
+				wg.Done()
+			}()
 		}
 
 		for _, p := range singles {
@@ -92,6 +96,8 @@ var allCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 		}
+
+		wg.Wait()
 	},
 }
 
