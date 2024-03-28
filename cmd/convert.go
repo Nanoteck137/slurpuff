@@ -76,11 +76,13 @@ var allCmd = &cobra.Command{
 		fmt.Printf("singles: %v\n", singles)
 
 		for _, p := range albums {
+			go func(){
 			src := path.Dir(p)
 			err := album.Execute(mode, src, dst)
 			if err != nil {
 				log.Fatal(err)
 			}
+		}()
 		}
 
 		for _, p := range singles {
