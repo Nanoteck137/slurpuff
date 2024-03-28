@@ -47,7 +47,7 @@ func Execute(mode, src, dst string) error {
 		_ = single
 
 		albumConfig := album.AlbumConfig{
-			Album:    single.Name + " (Single)",
+			Album:    single.Name,
 			Artist:   config.Artist,
 			CoverArt: single.CoverArt,
 			Tracks:   []album.Track{
