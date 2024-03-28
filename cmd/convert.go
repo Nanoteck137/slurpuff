@@ -6,7 +6,6 @@ import (
 	"log"
 	"path"
 	"path/filepath"
-	"sync"
 
 	"github.com/nanoteck137/slurpuff/album"
 	"github.com/nanoteck137/slurpuff/single"
@@ -77,11 +76,11 @@ var allCmd = &cobra.Command{
 		fmt.Printf("singles: %v\n", singles)
 
 		for _, p := range albums {
-				src := path.Dir(p)
-				err := album.Execute(mode, src, dst)
-				if err != nil {
-					log.Fatal(err)
-				}
+			src := path.Dir(p)
+			err := album.Execute(mode, src, dst)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		for _, p := range singles {
