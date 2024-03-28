@@ -92,6 +92,14 @@ var initAlbumCmd = &cobra.Command{
 					date = value
 				}
 
+				var genres []string
+				if value, exists := info.Tags["genres"]; exists {
+					genres = strings.Split(value, ",")
+					for i := range genres {
+						genres[i] = strings.TrimSpace(genres[i])
+					}
+				}
+
 				artists := strings.Split(artist, ",")
 				for i := range artists {
 					artists[i] = strings.TrimSpace(artists[i])
@@ -104,6 +112,7 @@ var initAlbumCmd = &cobra.Command{
 					Date:      date,
 					Artist:    artists[0],
 					Tags:      []string{},
+					Genres:    genres,
 					Featuring: artists[1:],
 				})
 			}
