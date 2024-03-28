@@ -21,6 +21,7 @@ type Track struct {
 	Artist    string   `toml:"artist"`
 	Date      string   `toml:"date"`
 	Tags      []string `toml:"tags"`
+	Genres    []string `toml:"genres"`
 	Featuring []string `toml:"featuring"`
 }
 
@@ -179,6 +180,10 @@ func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
 			args = append(args, "-metadata", fmt.Sprintf("featuring=%s", strings.Join(track.Featuring, ",")))
 		}
 
+		if len(track.Genres) > 0 {
+			args = append(args, "-metadata", fmt.Sprintf("genres=%s", strings.Join(track.Genres, ",")))
+		}
+
 		if !copyMode && outputExt == ".opus" {
 			args = append(args, "-vbr", "on", "-b:a", "128k")
 		}
@@ -209,7 +214,7 @@ func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
 			if err != nil {
 				log.Fatal(err)
 			}
-			
+
 			plock.Lock()
 			fmt.Println("Done Processing:", trackPath)
 			plock.Unlock()
