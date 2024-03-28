@@ -76,17 +76,12 @@ var allCmd = &cobra.Command{
 		fmt.Printf("albums: %v\n", albums)
 		fmt.Printf("singles: %v\n", singles)
 
-		wg := sync.WaitGroup{}
 		for _, p := range albums {
-			wg.Add(1)
-			go func() {
 				src := path.Dir(p)
 				err := album.Execute(mode, src, dst)
 				if err != nil {
 					log.Fatal(err)
 				}
-				wg.Done()
-			}()
 		}
 
 		for _, p := range singles {
@@ -96,8 +91,6 @@ var allCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 		}
-
-		wg.Wait()
 	},
 }
 
