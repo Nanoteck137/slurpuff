@@ -44,18 +44,18 @@ func Execute(mode, src, dst string) error {
 
 	data, err := os.ReadFile(conf)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", err)
 	}
 
 	var config AlbumConfig
 	err = toml.Unmarshal(data, &config)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", err)
 	}
 
 	err = ExecuteConfig(config, mode, src, dst)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", err)
 	}
 
 	return nil
