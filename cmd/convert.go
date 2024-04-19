@@ -47,7 +47,7 @@ var albumCmd = &cobra.Command{
 }
 
 var allCmd = &cobra.Command{
-	Use:  "all",
+	Use:  "all <DEST_DIR>",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		dst := args[0]
