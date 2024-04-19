@@ -112,10 +112,12 @@ func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
 		}
 	}
 
+	coverArt := ""
 	if config.CoverArt != "" {
 		srcCoverArt := path.Join(src, config.CoverArt)
 		ext := path.Ext(srcCoverArt)
-		_, err = utils.Copy(srcCoverArt, path.Join(dir, "cover"+ext))
+		coverArt = path.Join(dir, "cover"+ext)
+		_, err = utils.Copy(srcCoverArt, coverArt)
 		if err != nil {
 			return err
 		}
@@ -197,7 +199,9 @@ func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
 		if err != nil {
 			return err
 		}
-		args = append(args, path.Join(dir, safeOutputName))
+
+		output := path.Join(dir, safeOutputName)
+		args = append(args, output)
 
 		wg.Add(1)
 
@@ -213,6 +217,14 @@ func ExecuteConfig(config AlbumConfig, mode, src, dst string) error {
 			err = cmd.Run()
 			if err != nil {
 				log.Fatal(err)
+			}
+
+			if outputExt == ".opus" && coverArt != "" {
+				cmd := exec.Command("opusimage", output, coverArt)
+				err := cmd.Run()
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
 
 			plock.Lock()

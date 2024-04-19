@@ -4,9 +4,10 @@
   inputs = {
     nixpkgs.url      = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url  = "github:numtide/flake-utils";
+    opusimage.url    = "github:nanoteck137/opusimage";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
+  outputs = { self, nixpkgs, flake-utils, opusimage, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         overlays = [];
@@ -23,7 +24,7 @@
           nativeBuildInputs = [ pkgs.makeWrapper ];
 
           postFixup = ''
-          wrapProgram $out/bin/slurpuff --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.ffmpeg ]}
+          wrapProgram $out/bin/slurpuff --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.ffmpeg opusimage.packages.${system}.default ]}
           '';
         };
       in
@@ -35,6 +36,7 @@
           buildInputs = with pkgs; [
             go
             ffmpeg
+            opusimage.packages.${system}.default
           ];
         };
       }
