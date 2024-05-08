@@ -6,7 +6,6 @@ import (
 	"path"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/nanoteck137/slurpuff/album"
 	"github.com/nanoteck137/slurpuff/utils"
@@ -26,6 +25,7 @@ var initAlbumCmd = &cobra.Command{
 		outputFile, _ := cmd.Flags().GetString("output")
 
 		genres, _ := cmd.Flags().GetString("genres")
+		dateOverride, _ := cmd.Flags().GetString("date")
 
 		entries, err := os.ReadDir(src)
 		if err != nil {
@@ -93,8 +93,12 @@ var initAlbumCmd = &cobra.Command{
 				}
 
 				date := ""
-				if value, exists := info.Tags["date"]; exists {
-					date = value
+				if dateOverride != "" {
+					date = dateOverride
+				} else {
+					if value, exists := info.Tags["date"]; exists {
+						date = value
+					}
 				}
 
 				var genres []string = make([]string, len(defaultGenres))
@@ -154,6 +158,7 @@ func init() {
 
 	initAlbumCmd.Flags().StringP("output", "o", "album.toml", "output file")
 	initAlbumCmd.Flags().StringP("genres", "g", "", "set genres (comma seperated list)")
+	initAlbumCmd.Flags().String("date", "", "override date")
 
 	initCmd.AddCommand(initAlbumCmd)
 	rootCmd.AddCommand(initCmd)
