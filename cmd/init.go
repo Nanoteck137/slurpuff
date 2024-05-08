@@ -123,6 +123,10 @@ var initAlbumCmd = &cobra.Command{
 			}
 		}
 
+		if albumArtist == "" && len(tracks) > 0 {
+			albumArtist = tracks[0].Artist
+		}
+
 		albumCover := utils.FindFirstValidImage(src)
 
 		config := album.AlbumConfig{
