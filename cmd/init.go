@@ -37,7 +37,14 @@ var initAlbumCmd = &cobra.Command{
 		albumName := ""
 
 		defaultGenres := strings.Split(genres, ",")
+		for i, genre := range defaultGenres {
+			defaultGenres[i] = strings.TrimSpace(genre)
+		}
+
 		defaultTags := strings.Split(tags, ",")
+		for i, tag := range defaultTags {
+			defaultTags[i] = strings.TrimSpace(tag)
+		}
 
 		tracks := []album.Track{}
 
