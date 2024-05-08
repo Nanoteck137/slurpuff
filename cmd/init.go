@@ -36,14 +36,20 @@ var initAlbumCmd = &cobra.Command{
 		albumArtist := ""
 		albumName := ""
 
-		defaultGenres := strings.Split(genres, ",")
-		for i, genre := range defaultGenres {
-			defaultGenres[i] = strings.TrimSpace(genre)
+		var defaultGenres []string 
+		if genres != "" {
+			defaultGenres = strings.Split(genres, ",")
+			for i, genre := range defaultGenres {
+				defaultGenres[i] = strings.TrimSpace(genre)
+			}
 		}
 
-		defaultTags := strings.Split(tags, ",")
-		for i, tag := range defaultTags {
-			defaultTags[i] = strings.TrimSpace(tag)
+		var defaultTags []string
+		if tags != "" {
+			defaultTags = strings.Split(tags, ",")
+			for i, tag := range defaultTags {
+				defaultTags[i] = strings.TrimSpace(tag)
+			}
 		}
 
 		tracks := []album.Track{}
