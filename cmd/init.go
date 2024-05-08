@@ -6,6 +6,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/nanoteck137/slurpuff/album"
 	"github.com/nanoteck137/slurpuff/utils"
@@ -152,7 +153,7 @@ func init() {
 	initCmd.PersistentFlags().StringP("dir", "d", ".", "album directory")
 
 	initAlbumCmd.Flags().StringP("output", "o", "album.toml", "output file")
-	initAlbumCmd.Flags().StringP("genres", "g", "", "set genre (comma seperated)")
+	initAlbumCmd.Flags().StringP("genres", "g", "", "set genres (comma seperated list)")
 
 	initCmd.AddCommand(initAlbumCmd)
 	rootCmd.AddCommand(initCmd)
