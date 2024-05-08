@@ -24,6 +24,8 @@ var initAlbumCmd = &cobra.Command{
 
 		outputFile, _ := cmd.Flags().GetString("output")
 
+		genres, _ := cmd.Flags().GetString("genres")
+
 		entries, err := os.ReadDir(src)
 		if err != nil {
 			log.Fatal(err)
@@ -31,6 +33,8 @@ var initAlbumCmd = &cobra.Command{
 
 		albumArtist := ""
 		albumName := ""
+
+		defaultGenres := strings.Split(genres, ",")
 
 		tracks := []album.Track{}
 
@@ -92,7 +96,8 @@ var initAlbumCmd = &cobra.Command{
 					date = value
 				}
 
-				var genres []string
+				var genres []string = make([]string, len(defaultGenres))
+				copy(genres, defaultGenres)
 				if value, exists := info.Tags["genres"]; exists {
 					genres = strings.Split(value, ",")
 					for i := range genres {
@@ -143,6 +148,7 @@ func init() {
 	initCmd.PersistentFlags().StringP("dir", "d", ".", "album directory")
 
 	initAlbumCmd.Flags().StringP("output", "o", "album.toml", "output file")
+	initAlbumCmd.Flags().StringP("genres", "g", "", "set genre (comma seperated)")
 
 	initCmd.AddCommand(initAlbumCmd)
 	rootCmd.AddCommand(initCmd)
