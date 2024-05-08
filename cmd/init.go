@@ -25,6 +25,7 @@ var initAlbumCmd = &cobra.Command{
 		outputFile, _ := cmd.Flags().GetString("output")
 
 		genres, _ := cmd.Flags().GetString("genres")
+		tags, _ := cmd.Flags().GetString("tags")
 		dateOverride, _ := cmd.Flags().GetString("date")
 
 		entries, err := os.ReadDir(src)
@@ -36,6 +37,7 @@ var initAlbumCmd = &cobra.Command{
 		albumName := ""
 
 		defaultGenres := strings.Split(genres, ",")
+		defaultTags := strings.Split(tags, ",")
 
 		tracks := []album.Track{}
 
@@ -121,7 +123,7 @@ var initAlbumCmd = &cobra.Command{
 					Name:      name,
 					Date:      date,
 					Artist:    artists[0],
-					Tags:      []string{},
+					Tags:      defaultTags,
 					Genres:    genres,
 					Featuring: artists[1:],
 				})
@@ -158,6 +160,7 @@ func init() {
 
 	initAlbumCmd.Flags().StringP("output", "o", "album.toml", "output file")
 	initAlbumCmd.Flags().String("genres", "", "set genres (comma seperated list)")
+	initAlbumCmd.Flags().String("tags", "", "set tags (comma seperated list)")
 	initAlbumCmd.Flags().String("date", "", "override date")
 
 	initCmd.AddCommand(initAlbumCmd)
