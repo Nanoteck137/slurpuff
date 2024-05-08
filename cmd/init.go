@@ -157,7 +157,7 @@ func init() {
 	initCmd.PersistentFlags().StringP("dir", "d", ".", "album directory")
 
 	initAlbumCmd.Flags().StringP("output", "o", "album.toml", "output file")
-	initAlbumCmd.Flags().StringP("genres", "g", "", "set genres (comma seperated list)")
+	initAlbumCmd.Flags().String("genres", "", "set genres (comma seperated list)")
 	initAlbumCmd.Flags().String("date", "", "override date")
 
 	initCmd.AddCommand(initAlbumCmd)
