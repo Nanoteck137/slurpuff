@@ -6,8 +6,10 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 
-	"github.com/nanoteck137/slurpuff/album"
+	"github.com/nanoteck137/parasect"
+	"github.com/nanoteck137/slurpuff/types"
 	"github.com/nanoteck137/slurpuff/utils"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/cobra"
@@ -33,7 +35,7 @@ var initCmd = &cobra.Command{
 		albumArtist := ""
 		albumName := ""
 
-		var defaultGenres []string 
+		var defaultGenres []string
 		if genres != "" {
 			defaultGenres = strings.Split(genres, ",")
 			for i, genre := range defaultGenres {
@@ -49,8 +51,7 @@ var initCmd = &cobra.Command{
 			}
 		}
 
-		tracks := []album.Track{}
-
+		var tracks []types.TrackMetadata
 		for _, entry := range entries {
 			if entry.Name()[0] == '.' {
 				continue
@@ -59,85 +60,106 @@ var initCmd = &cobra.Command{
 			p := path.Join(src, entry.Name())
 			ext := path.Ext(entry.Name())
 
-			if ext == "" {
+			if ext == "" || !utils.IsValidTrackExt(ext) {
 				continue
 			}
 
-			// TODO(patrik): Change this IsValidTrackExt
-			if utils.IsValidTrackExt(ext[1:]) {
-				info, err := utils.CheckFile(p)
+			info, err := utils.CheckFile(p)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			if albumName == "" {
+				if name, exists := info.Tags["album"]; exists {
+					albumName = name
+				}
+			}
+
+			if albumArtist == "" {
+				if name, exists := info.Tags["album_artist"]; exists {
+					albumArtist = name
+				}
+			}
+
+			artist := ""
+			if value, exists := info.Tags["artist"]; exists {
+				artist = value
+			}
+
+			track := info.Number
+			if value, exists := info.Tags["track"]; exists {
+				if track == 0 {
+					t, _ := strconv.ParseInt(value, 10, 64)
+					track = int(t)
+				}
+			}
+
+			name := info.Name
+			if value, exists := info.Tags["title"]; exists {
+				name = value
+			} else {
+				if name == "" {
+					name = entry.Name()
+				}
+			}
+
+			date := ""
+			if dateOverride != "" {
+				date = dateOverride
+			} else {
+				if value, exists := info.Tags["date"]; exists {
+					date = value
+				}
+			}
+
+			_ = date
+
+			var genres []string = make([]string, len(defaultGenres))
+			copy(genres, defaultGenres)
+			if value, exists := info.Tags["genres"]; exists {
+				genres = strings.Split(value, ",")
+				for i := range genres {
+					genres[i] = strings.TrimSpace(genres[i])
+				}
+			}
+
+			artists := strings.Split(artist, ",")
+			for i := range artists {
+				artists[i] = strings.TrimSpace(artists[i])
+			}
+
+			lossless := entry.Name()
+			lossy := ""
+
+			if utils.IsLossyFormatExt(ext) {
+				lossless = ""
+				lossy = entry.Name()
+			} else {
+				dst := strings.TrimSuffix(entry.Name(), ext) + ".opus"
+
+				// TODO(patrik): Add options for this
+				err = parasect.RunFFmpeg(true, "-y", "-i", entry.Name(), "-vbr", "on", "-b:a", "128k", dst)
 				if err != nil {
 					log.Fatal(err)
 				}
 
-				if albumName == "" {
-					if name, exists := info.Tags["album"]; exists {
-						albumName = name
-					}
-				}
-
-				if albumArtist == "" {
-					if name, exists := info.Tags["album_artist"]; exists {
-						albumArtist = name
-					}
-				}
-
-				artist := ""
-				if value, exists := info.Tags["artist"]; exists {
-					artist = value
-				}
-
-				track := info.Number
-				if value, exists := info.Tags["track"]; exists {
-					if track == 0 {
-						t, _ := strconv.ParseInt(value, 10, 64)
-						track = int(t)
-					}
-				}
-
-				name := info.Name
-				if value, exists := info.Tags["title"]; exists {
-					name = value
-				} else {
-					if name == "" {
-						name = entry.Name()
-					}
-				}
-
-				date := ""
-				if dateOverride != "" {
-					date = dateOverride
-				} else {
-					if value, exists := info.Tags["date"]; exists {
-						date = value
-					}
-				}
-
-				var genres []string = make([]string, len(defaultGenres))
-				copy(genres, defaultGenres)
-				if value, exists := info.Tags["genres"]; exists {
-					genres = strings.Split(value, ",")
-					for i := range genres {
-						genres[i] = strings.TrimSpace(genres[i])
-					}
-				}
-
-				artists := strings.Split(artist, ",")
-				for i := range artists {
-					artists[i] = strings.TrimSpace(artists[i])
-				}
-
-				tracks = append(tracks, album.Track{
-					Filename:  entry.Name(),
-					Num:       int(track),
-					Name:      name,
-					Date:      date,
-					Artist:    artists[0],
-					Tags:      defaultTags,
-					Genres:    genres,
-					Featuring: artists[1:],
-				})
+				lossy = dst
 			}
+
+			tracks = append(tracks, types.TrackMetadata{
+				Num:       int(track),
+				Name:      name,
+				Duration:  info.Duration,
+				Artist:    artist,
+				Year:      time.Now().Year(),
+				Tags:      defaultTags,
+				Genres:    genres,
+				Featuring: artists[1:],
+				File: types.TrackFile{
+					Lossless: lossless,
+					Lossy:    lossy,
+				},
+			})
 		}
 
 		if albumArtist == "" && len(tracks) > 0 {
@@ -146,7 +168,7 @@ var initCmd = &cobra.Command{
 
 		albumCover := utils.FindFirstValidImage(src)
 
-		config := album.AlbumConfig{
+		config := types.AlbumMetadata{
 			Album:    albumName,
 			Artist:   albumArtist,
 			CoverArt: albumCover,
