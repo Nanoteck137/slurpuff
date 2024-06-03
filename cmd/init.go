@@ -15,10 +15,7 @@ import (
 
 var initCmd = &cobra.Command{
 	Use: "init",
-}
 
-var initAlbumCmd = &cobra.Command{
-	Use: "album",
 	Run: func(cmd *cobra.Command, args []string) {
 		src, _ := cmd.Flags().GetString("dir")
 
@@ -171,11 +168,10 @@ var initAlbumCmd = &cobra.Command{
 func init() {
 	initCmd.PersistentFlags().StringP("dir", "d", ".", "album directory")
 
-	initAlbumCmd.Flags().StringP("output", "o", "album.toml", "output file")
-	initAlbumCmd.Flags().String("genres", "", "set genres (comma seperated list)")
-	initAlbumCmd.Flags().String("tags", "", "set tags (comma seperated list)")
-	initAlbumCmd.Flags().String("date", "", "override date")
+	initCmd.Flags().StringP("output", "o", "album.toml", "output file")
+	initCmd.Flags().String("genres", "", "set genres (comma seperated list)")
+	initCmd.Flags().String("tags", "", "set tags (comma seperated list)")
+	initCmd.Flags().String("date", "", "override date")
 
-	initCmd.AddCommand(initAlbumCmd)
 	rootCmd.AddCommand(initCmd)
 }

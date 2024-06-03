@@ -59,6 +59,16 @@ func IsValidCoverExt(ext string) bool {
 	return parasect.IsValidExt(validCoverExts, ext)
 }
 
+
+var lossyFormatExts = []string{
+	"opus",
+	"mp3",
+}
+
+func IsLossyFormatExt(ext string) bool {
+	return parasect.IsValidExt(lossyFormatExts, ext)
+}
+
 func SafeName(name string) (string, error) {
 	replacementSpace := func(options *filenamify.Options) { 
 		options.Replacement = "" 
