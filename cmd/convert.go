@@ -19,6 +19,7 @@ import (
 
 func Convert(p string) {
 	albumPath := path.Join(p, "album.toml")
+	log.Printf("Converting '%s'", albumPath) 
 
 	data, err := os.ReadFile(albumPath)
 	if err != nil {
