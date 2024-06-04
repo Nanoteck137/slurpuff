@@ -19,7 +19,7 @@ import (
 
 func Convert(p string) {
 	albumPath := path.Join(p, "album.toml")
-	log.Printf("Converting '%s'", albumPath) 
+	log.Printf("Converting '%s'", albumPath)
 
 	data, err := os.ReadFile(albumPath)
 	if err != nil {
@@ -36,9 +36,15 @@ func Convert(p string) {
 
 	var tracks []types.TrackMetadata
 	for _, t := range old.Tracks {
-		year, err := strconv.Atoi(t.Date)
-		if err != nil {
-			log.Fatal(err)
+		year := 0
+
+		if t.Date != "" {
+			y, err := strconv.Atoi(t.Date)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			year = y
 		}
 
 		trackFile := path.Join(p, t.Filename)
