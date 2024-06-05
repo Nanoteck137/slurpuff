@@ -25,7 +25,7 @@ var initCmd = &cobra.Command{
 
 		genres, _ := cmd.Flags().GetString("genres")
 		tags, _ := cmd.Flags().GetString("tags")
-		dateOverride, _ := cmd.Flags().GetString("date")
+		yearOverride, _ := cmd.Flags().GetInt("year")
 
 		entries, err := os.ReadDir(src)
 		if err != nil {
@@ -103,16 +103,11 @@ var initCmd = &cobra.Command{
 				}
 			}
 
-			date := ""
-			if dateOverride != "" {
-				date = dateOverride
-			} else {
-				if value, exists := info.Tags["date"]; exists {
-					date = value
-				}
-			}
+			year := time.Now().Year()
 
-			_ = date
+			if yearOverride != 0 {
+				year = yearOverride
+			}
 
 			var genres []string = make([]string, len(defaultGenres))
 			copy(genres, defaultGenres)
@@ -151,7 +146,7 @@ var initCmd = &cobra.Command{
 				Name:      name,
 				Duration:  info.Duration,
 				Artist:    artist,
-				Year:      time.Now().Year(),
+				Year:      year,
 				Tags:      defaultTags,
 				Genres:    genres,
 				Featuring: artists[1:],
@@ -193,7 +188,7 @@ func init() {
 	initCmd.Flags().StringP("output", "o", "album.toml", "output file")
 	initCmd.Flags().String("genres", "", "set genres (comma seperated list)")
 	initCmd.Flags().String("tags", "", "set tags (comma seperated list)")
-	initCmd.Flags().String("date", "", "override date")
+	initCmd.Flags().Int("year", 0, "override year")
 
 	rootCmd.AddCommand(initCmd)
 }
