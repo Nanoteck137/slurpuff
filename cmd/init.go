@@ -145,7 +145,7 @@ var initCmd = &cobra.Command{
 				Num:       int(track),
 				Name:      name,
 				Duration:  info.Duration,
-				Artist:    artist,
+				Artist:    artists[0],
 				Year:      year,
 				Tags:      defaultTags,
 				Genres:    genres,
